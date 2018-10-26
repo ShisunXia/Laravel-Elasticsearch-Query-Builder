@@ -1,0 +1,44 @@
+{
+    "name": "shisun/laravelelasticsearchquerybuilder",
+    "description": ":description",
+    "license": "license",
+    "authors": [
+        {
+            "name": "Shisun Xia",
+            "email": "shisun.xia@hotmail.com",
+            "homepage": "author homepage"
+        }
+    ],
+    "homepage": "https://github.com/shisun/laravelelasticsearchquerybuilder",
+    "keywords": ["Laravel", "LaravelElasticsearchQueryBuilder"],
+    "require": {
+        "illuminate/support": "~5",
+        "elasticquent/elasticquent": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~7.0",
+        "mockery/mockery": "^1.1",
+        "orchestra/testbench": "~3.0",
+        "sempro/phpunit-pretty-print": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shisun\\LaravelElasticsearchQueryBuilder\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Shisun\\LaravelElasticsearchQueryBuilder\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Shisun\\LaravelElasticsearchQueryBuilder\\LaravelElasticsearchQueryBuilderServiceProvider"
+            ],
+            "aliases": {
+                "LaravelElasticsearchQueryBuilder": "Shisun\\LaravelElasticsearchQueryBuilder\\Facades\\LaravelElasticsearchQueryBuilder"
+            }
+        }
+    }
+}
