@@ -1,7 +1,7 @@
 {
     "name": "shisun/laravelelasticsearchquerybuilder",
-    "description": ":description",
-    "license": "license",
+    "description": ":Query Elasticseach by using Eloquent",
+    "license": "GPL-3.0-only",
     "authors": [
         {
             "name": "Shisun Xia",
