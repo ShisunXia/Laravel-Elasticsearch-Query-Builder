@@ -4,9 +4,8 @@
     "license": "GPL-3.0-only",
     "authors": [
         {
-            "name": "Shisun Xia",
-            "email": "shisun.xia@hotmail.com",
-            "homepage": "author homepage"
+            "name": "Shisun(Leo) Xia",
+            "email": "shisun.xia@hotmail.com"
         }
     ],
     "homepage": "https://github.com/shisun/laravelelasticsearchquerybuilder",
