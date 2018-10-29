@@ -1,6 +1,6 @@
 {
-    "name": "shisun/laravelelasticsearchquerybuilder",
-    "description": ":Query Elasticseach by using Eloquent",
+    "name": "shisun/laravel-elasticsearch-query-builder",
+    "description": ":Query Elasticsearch by using Eloquent",
     "license": "GPL-3.0-only",
     "authors": [
         {
@@ -8,8 +8,8 @@
             "email": "shisun.xia@hotmail.com"
         }
     ],
-    "homepage": "https://github.com/shisun/laravelelasticsearchquerybuilder",
-    "keywords": ["Laravel", "LaravelElasticsearchQueryBuilder"],
+    "homepage": "https://github.com/shisun/laravel-elasticsearch-query-builder",
+    "keywords": ["Laravel", "LaravelElasticsearchQueryBuilder", "elasticsearch"],
     "require": {
         "illuminate/support": "~5",
         "elasticquent/elasticquent": "dev-master"
