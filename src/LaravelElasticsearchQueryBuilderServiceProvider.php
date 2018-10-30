@@ -31,7 +31,7 @@ class LaravelElasticsearchQueryBuilderServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/laravelelasticsearchquerybuilder.php', 'laravelelasticsearchquerybuilder');
+        $this->mergeConfigFrom(__DIR__ . '/../config/laravel-elasticsearch-query-builder.php', 'laravelelasticsearchquerybuilder');
 
         // Register the service the package provides.
         $this->app->singleton('laravelelasticsearchquerybuilder', function ($app) {
@@ -58,7 +58,7 @@ class LaravelElasticsearchQueryBuilderServiceProvider extends ServiceProvider
     {
         // Publishing the configuration file.
         $this->publishes([
-            __DIR__.'/../config/laravelelasticsearchquerybuilder.php' => config_path('laravelelasticsearchquerybuilder.php'),
+            __DIR__ . '/../config/laravel-elasticsearch-query-builder.php' => config_path('laravelelasticsearchquerybuilder.php'),
         ], 'laravelelasticsearchquerybuilder.config');
 
         // Publishing the views.
