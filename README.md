@@ -85,8 +85,10 @@ The package only relies on the official [PHP Elasticsearch package(v6)](https://
     * getQuery
     * getBody
     * getAggs
-###Query Clauses
-####where
+
+### Query Clauses
+
+#### where
 * Parameters
 
    | Name     | Required | Type                    | Default   | Description                                           |
@@ -111,7 +113,9 @@ The package only relies on the official [PHP Elasticsearch package(v6)](https://
           $q->orWhere(...)->orWhere(...);
       })->get()->toArray()
       ```
-####orWhere
+
+#### orWhere
+
 * Parameters
 
    | Name     | Required | Type                    | Default   | Description                                           |
@@ -136,7 +140,7 @@ The package only relies on the official [PHP Elasticsearch package(v6)](https://
       })->limit(1)->get()->toArray()
       ```
       
-####whereMatch
+#### whereMatch
 * It is used to make fuzzy text search. This function should only be applied on text fields.
 * Parameters
 
@@ -162,7 +166,8 @@ The package only relies on the official [PHP Elasticsearch package(v6)](https://
              'zero_terms_query' => 'all'
            ])->first()
       ```
-###Order
+      
+### Order
 
 
 
