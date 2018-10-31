@@ -13,6 +13,6 @@ class LaravelElasticsearchQueryBuilder extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'laravelelasticsearchquerybuilder';
+        return 'laravel-elastic-search-query-builder';
     }
 }

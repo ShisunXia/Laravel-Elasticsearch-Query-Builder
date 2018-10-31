@@ -93,7 +93,7 @@ The package only relies on the official [PHP Elasticsearch package(v6)](https://
 
    | Name     | Required | Type                    | Default   | Description                                           |
    |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
-   | column   | - [x]    | ``callable``,``string`` |           |                                                       |
+   | column   | Y        | ``callable``,``string`` |           |                                                       |
    | operator |          | ``string``              | ``null``  | ``=``,``>``,``<``,``<=``,``>=``,``like``,``!=``,``*`` |
    | value    |          | ``mixed``               | ``null``  |                                                       |
    | or       |          | ``bool``                | ``false`` |                                                       |

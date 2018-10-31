@@ -753,7 +753,7 @@ class LaravelElasticsearchQueryBuilder {
 		]];
 		$this->prepended_path = $prepended_path;
 		$this->model = $model;
-		$this->es_hosts = json_decode(env('ES_HOSTS', ''));
+		$this->es_hosts = config('laravel-elasticsearch-query-builder.ES_HOSTS') ?? json_decode(env('ES_HOSTS', '["localhost:9200"]'), true);
 		$this->es_client = $this->createClient();
 	}
 
