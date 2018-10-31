@@ -215,10 +215,16 @@ class LaravelElasticsearchQueryBuilder {
 		$this->validateValue($column_bak, $value);
 		$match = [];
 		if($options) {
-			$options['query'] = $value;
+			if($value !== null) {
+				$options['query'] = $value;
+			} elseif( ! isset($options['query'])) {
+				throw new \Exception('Either $value or $options["query"] is required.');
+			}
 			$match = [
 				$column => $options
 			];
+		} else {
+			$match = [$column => $value];
 		}
 		$this->query['bool']['must'][] = ['match' => $match];
 		return $this;

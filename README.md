@@ -37,7 +37,134 @@ The package only relies on the official [PHP Elasticsearch package(v6)](https://
     }
     ```
 
-## Usage example
+## Usage
+### Table of Contents
+* [Query Clauses](#query-clauses)
+    * where
+    * orWhere
+    * whereMatch
+    * orWhereMatch
+    * whereHas
+    * whereHasNull
+    * orWhereHas
+    * whereIn
+    * orWhereIn
+    * whereNotIn
+    * orWhereNotIn
+    * whereBetween
+* [Order](#order)
+    * orderBy
+* Pagination
+    * page
+    * limit
+    * offset
+* Aggregation
+    * aggregate
+    * aggregateAll
+    * aggregateOn
+    * groupBy
+    * min
+    * max
+* Other Filters
+    * minScore
+    * with
+    * withOut
+* Execute Query
+    * get
+    * count
+    * first
+* Results Manipulation
+    * toArray
+    * toEloquent
+    * rawResults
+    * aggregations
+    * getAggregationBuckets
+    * paginate
+    * getTotal
+* Direct Query Output
+    * getQuery
+    * getBody
+    * getAggs
+###Query Clauses
+####where
+* Parameters
+
+   | Name     | Required | Type                    | Default   | Description                                           |
+   |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
+   | column   | - [x]    | ``callable``,``string`` |           |                                                       |
+   | operator |          | ``string``              | ``null``  | ``=``,``>``,``<``,``<=``,``>=``,``like``,``!=``,``*`` |
+   | value    |          | ``mixed``               | ``null``  |                                                       |
+   | or       |          | ``bool``                | ``false`` |                                                       |
+   | boost    |          | ``bool``,``int``        | ``false`` | The weight of the column                              |
+* Output
+   
+   ``self``
+
+* Examples
+   1. ``=`` can be ignored
+      ```php
+      User::es()->where('id', 1)->first()
+      ```
+   2. ``column`` can be a function
+      ```php
+      User::es()->where(function($q) {
+          $q->orWhere(...)->orWhere(...);
+      })->get()->toArray()
+      ```
+####orWhere
+* Parameters
+
+   | Name     | Required | Type                    | Default   | Description                                           |
+   |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
+   | column   | - [x]    | ``callable``,``string`` |           |                                                       |
+   | operator |          | ``string``              | ``null``  | ``=``,``>``,``<``,``<=``,``>=``,``like``,``!=``,``*`` |
+   | value    |          | ``mixed``               | ``null``  |                                                       |
+   | boost    |          | ``bool``,``int``        | ``false`` | The weight of the column                              |
+* Output
+   
+   ``self``
+
+* Examples
+   1. ``=`` can be ignored
+      ```php
+      User::es()->orWhere('id', 1)->first()
+      ```
+   2. ``column`` can be a function
+      ```php
+      User::es()->orWhere(function($q) {
+          $q->where(...)->where(...);
+      })->limit(1)->get()->toArray()
+      ```
+      
+####whereMatch
+* It is used to make fuzzy text search. This function should only be applied on text fields.
+* Parameters
+
+   | Name     | Required | Type                    | Default   | Description                                           |
+   |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
+   | column   | - [x]    | ``string``              |           |                                                       |
+   | value    |          | ``mixed``               | ``null``  |                                                       |
+   | boost    |          | ``array``               | []        | ``match``query options. Check elasticsearch Docs for references |
+* Output
+   
+   ``self``
+
+* Examples
+   1. without option
+      ```php
+      User::es()->whereMatch('email', 'shisun@')->first()
+      ```
+   2. ``column`` can be a function
+      ```php
+      User::es()->whereMatch('email', 'shisun@', [
+             'query' => 'this will be overrided by $value',
+             'operator' => 'and',
+             'zero_terms_query' => 'all'
+           ])->first()
+      ```
+###Order
+
+
 
 ## Release History
 
