@@ -603,7 +603,7 @@ class LaravelElasticsearchQueryBuilder {
 			throw new \Exception("Using 'where' and 'groupBy' at the same level is illegal. Please use nested aggregate instead.");
 		}
 		if( ! isset($aggregation['terms']) && ! isset($aggregation['filter']) && isset($aggregation['aggs'])) {
-			$this->aggs[$name] = $aggregation['aggs'];
+			$this->aggs = array_merge($this->aggs, $aggregation['aggs']);
 		} else {
 			$this->aggs[$name] = $aggregation;
 		}
