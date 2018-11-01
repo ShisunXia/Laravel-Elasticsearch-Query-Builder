@@ -510,10 +510,10 @@ class LaravelElasticsearchQueryBuilder {
 			throw new \Exception('Either from or to is required.');
 		}
 		if( ! is_null($from)) {
-			$this->where($column, $from);
+			$this->where($column, '>=', $from);
 		}
 		if( ! is_null($to)) {
-			$this->where($column, $to);
+			$this->where($column, '<=', $to);
 		}
 		return $this;
 	}
@@ -631,6 +631,48 @@ class LaravelElasticsearchQueryBuilder {
 	public function max($column, $agg_name = null) {
 		$this->getMappingProperty($column);
 		$this->aggs[$agg_name ?? 'max_' . $column] = ['max' => ['field' => $column]];
+		return $this;
+	}
+
+	/**
+	 * @param $column
+	 * @param null|string $agg_name
+	 * @param null|float|int $missing_value
+	 * @return $this
+	 */
+	public function sum($column, $agg_name = null, $missing_value = null) {
+		$this->getMappingProperty($column);
+		if($missing_value !== null) {
+			$this->aggs[$agg_name ?? 'sum_' . $column] = ['sum' => [
+				'field' => $column,
+				'missing' => $missing_value
+			]];
+		} else {
+			$this->aggs[$agg_name ?? 'sum_' . $column] = ['sum' => [
+				'field' => $column
+			]];
+		}
+		return $this;
+	}
+
+	/**
+	 * @param $column
+	 * @param null|string $agg_name
+	 * @param null|float|int $missing_value
+	 * @return $this
+	 */
+	public function avg($column, $agg_name = null, $missing_value = null) {
+		$this->getMappingProperty($column);
+		if($missing_value !== null) {
+			$this->aggs[$agg_name ?? 'avg_' . $column] = ['avg' => [
+				'field' => $column,
+				'missing' => $missing_value
+			]];
+		} else {
+			$this->aggs[$agg_name ?? 'avg_' . $column] = ['avg' => [
+				'field' => $column
+			]];
+		}
 		return $this;
 	}
 
