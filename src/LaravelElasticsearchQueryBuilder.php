@@ -619,7 +619,7 @@ class LaravelElasticsearchQueryBuilder {
 	public function aggregateAll($name, $agg) {
 		$builder = new LaravelElasticsearchQueryBuilder($this->model);
 		$this->aggs['all_' . $name] = [
-			'global' => [],
+			'global' => new \stdClass(),
 			'aggs' => $builder->aggregate($name, $agg)->getAggs()
 		];
 		return $this;
