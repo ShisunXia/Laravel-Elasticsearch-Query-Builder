@@ -65,6 +65,8 @@ The package only relies on the official [PHP Elasticsearch package(v6)](https://
     * groupBy
     * min
     * max
+    * avg
+    * sum
 * Other Filters
     * minScore
     * with
