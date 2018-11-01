@@ -73,6 +73,8 @@ The package only relies on the official [PHP Elasticsearch package(v6)](https://
     * get
     * count
     * first
+    * find
+    * delete
 * Results Manipulation
     * toArray
     * toEloquent

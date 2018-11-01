@@ -739,6 +739,32 @@ class LaravelElasticsearchQueryBuilder {
 	}
 
 	/**
+	 * @param $key
+	 * @return null|Eloquent
+	 */
+	public function find($key) {
+		return $this->where($this->model->getKeyName(), $key)->first(true);
+	}
+
+	/**
+	 * @param $key
+	 * @return mixed
+	 * @throws \Exception
+	 */
+	public function delete($key) {
+		if( ! $this->model) {
+			throw new \Exception('Model is missing.');
+		}
+		$params = [
+			'index' => $this->model->getIndexName(),
+			'type'  => $this->model->getIndexName(),
+			'id'    => $key
+		];
+		$result = $this->es_client->delete($params);
+		return $result['found'];
+	}
+
+	/**
 	 * LaravelElasticsearchQueryBuilder constructor.
 	 * @param Eloquent $model
 	 * @param bool $prepended_path
