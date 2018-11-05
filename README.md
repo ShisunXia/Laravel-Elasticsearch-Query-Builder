@@ -52,6 +52,7 @@ The package only relies on the official [PHP Elasticsearch package(v6)](https://
     * whereNotIn
     * orWhereNotIn
     * whereBetween
+    * orWhereBetween
 * [Order](#order)
     * orderBy
 * Pagination
@@ -170,7 +171,41 @@ The package only relies on the official [PHP Elasticsearch package(v6)](https://
              'zero_terms_query' => 'all'
            ])->first()
       ```
-      
+#### whereBetween
+* Parameters
+
+   | Name     | Required | Type                    | Default   | Description                                           |
+   |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
+   | column   | Y        | ``string``              |           |                                                       |
+   | from     |          | ``numeric``             | ``null``  | ``from`` and ``to`` cannot be both ``null``           |
+   | to       |          | ``numeric``             | ``null``  |                                                       |
+* Output
+   
+   ``self``
+
+* Examples
+   1. basic example
+      ```php
+      User::es()->whereBetween('id', 1, 5)->first()
+      ```
+
+#### orWhereBetween
+* Parameters
+
+   | Name     | Required | Type                    | Default   | Description                                           |
+   |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
+   | column   | Y        | ``string``              |           |                                                       |
+   | from     |          | ``numeric``             | ``null``  | ``from`` and ``to`` cannot be both ``null``           |
+   | to       |          | ``numeric``             | ``null``  |                                                       |
+* Output
+   
+   ``self``
+
+* Examples
+   1. basic example
+      ```php
+      User::es()->orWhereBetween('id', 1, 5)->first()
+      ```
 ### Order
 
 

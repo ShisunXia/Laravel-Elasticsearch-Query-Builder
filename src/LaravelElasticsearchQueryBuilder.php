@@ -520,6 +520,29 @@ class LaravelElasticsearchQueryBuilder {
 
 	/**
 	 * @param string $column
+	 * @param null $from
+	 * @param null $to
+	 * @return LaravelElasticsearchQueryBuilder
+	 * @throws \Exception
+	 */
+	public function orWhereBetween(string $column, $from = null, $to = null) {
+		if(is_null($from) && is_null($to)) {
+			throw new \Exception('Either from or to is required.');
+		}
+		$this->orWhere(function($q) use($column, $from, $to) {
+			if( ! is_null($from)) {
+				$q->where($column, '>=', $from);
+			}
+			if( ! is_null($to)) {
+				$q->where($column, '<=', $to);
+			}
+		});
+
+		return $this;
+	}
+
+	/**
+	 * @param string $column
 	 * @param string $order
 	 * @param bool $script
 	 * @return LaravelElasticsearchQueryBuilder
