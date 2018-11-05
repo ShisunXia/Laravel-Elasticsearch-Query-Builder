@@ -47,7 +47,7 @@ class LaravelElasticsearchQueryBuilder {
 	 */
 	public function where($column, $operator = null, $value = null, $or = false, $boost = false) {
 		if(is_callable($column)) {
-			$builder = new LaravelElasticsearchQueryBuilder($this->model);
+			$builder = new LaravelElasticsearchQueryBuilder($this->model, $this->prepended_path);
 			$column($builder);
 			$query = $builder->getQuery();
 			$query['bool']['minimum_should_match'] = 1;
@@ -265,7 +265,7 @@ class LaravelElasticsearchQueryBuilder {
 	 */
 	public function whereHas($column, $closure = null, $or = false, $boost = false) {
 		if(is_callable($column)) {
-			$builder = new LaravelElasticsearchQueryBuilder($this->model);
+			$builder = new LaravelElasticsearchQueryBuilder($this->model, $this->prepended_path);
 			$column($builder);
 			$this->query['bool']['must'][] = $builder->getQuery();
 			return $this;
@@ -342,7 +342,7 @@ class LaravelElasticsearchQueryBuilder {
 	 */
 	public function orWhere($column, $operator = null, $value = null, $boost = false) {
 		if(is_callable($column)) {
-			$builder = new LaravelElasticsearchQueryBuilder($this->model);
+			$builder = new LaravelElasticsearchQueryBuilder($this->model, $this->prepended_path);
 			$column($builder);
 			$query = $builder->getQuery();
 			$this->query['bool']['minimum_should_match'] = 1;
