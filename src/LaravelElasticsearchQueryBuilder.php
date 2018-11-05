@@ -33,6 +33,82 @@ class LaravelElasticsearchQueryBuilder {
 	private $query;
 	private $body;
 	private $min_score;
+	// Options
+	private $index_name = 'index_name';
+	private $type_name = 'type_name';
+	private $validation = 'strict';
+
+	/**
+	 * @return mixed
+	 */
+	public function getIndexName()
+	{
+		return $this->index_name;
+	}
+
+	/**
+	 * @param mixed $index_name
+	 * @return LaravelElasticsearchQueryBuilder
+	 */
+	public function setIndexName($index_name)
+	{
+		$this->index_name = $index_name;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getTypeName()
+	{
+		return $this->type_name;
+	}
+
+	/**
+	 * @param mixed $type_name
+	 * @return LaravelElasticsearchQueryBuilder
+	 */
+	public function setTypeName($type_name)
+	{
+		$this->type_name = $type_name;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getValidation()
+	{
+		return $this->validation;
+	}
+
+	/**
+	 * @param mixed $validation
+	 * @return LaravelElasticsearchQueryBuilder
+	 */
+	public function setValidation($validation)
+	{
+		$this->validation = $validation;
+		return $this;
+	}
+
+	/**
+	 * @param $options
+	 * @return $this
+	 */
+	public function setOptions($options) {
+		$settable_options = ['index_name', 'type_name', 'validation'];
+		foreach ($settable_options as $settable_option) {
+			if(isset($options[$settable_option])) {
+				if($settable_option == 'validation' && in_array($options[$settable_option], [false, 'strict', 'column-existence-only'])) {
+					$this->validation = $options[$settable_option];
+				} else {
+					$this->{$settable_option} = $options[$settable_option];
+				}
+			}
+		}
+		return $this;
+	}
 
 	/**
 	 * Add a basic where clause to the query.
@@ -56,7 +132,8 @@ class LaravelElasticsearchQueryBuilder {
 		}
 		$column = $this->prepended_path ? $this->prepended_path . '.' . $column : $column;
 		$column_bak = $column;
-		[$column, $property]= $this->getMappingProperty($column);
+		$result = $this->getMappingProperty($column);
+		$column = $result[0];
 		if($value == null && func_num_args() == 2) {
 			$value = $operator;
 			$operator = '=';
@@ -141,7 +218,6 @@ class LaravelElasticsearchQueryBuilder {
 	 */
 	public function dirtyWhere($column, $operator = null, $value = null, $or = false) {
 		$column = $this->prepended_path ? $this->prepended_path . '.' . $column : $column;
-		$column_bak = $column;
 		$columns = explode('.', $column);
 		foreach($columns as $index => $column) {
 			$columns[$index] = snake_case($column);
@@ -208,12 +284,12 @@ class LaravelElasticsearchQueryBuilder {
 	public function whereMatch($column, $value = null, $options = []) {
 		$column = $this->prepended_path ? $this->prepended_path . '.' . $column : $column;
 		$column_bak = $column;
-		[$column, $property]= $this->getMappingProperty($column);
+		$result = $this->getMappingProperty($column);
+		$column = $result[0];
 		if( ! is_string($value) && ! is_integer($value) && ! is_null($value) && ! is_bool($value) && ! is_array($value)) {
 			throw new \Exception('String, Integer, Boolean, Array or NULL type value expected.');
 		}
 		$this->validateValue($column_bak, $value);
-		$match = [];
 		if($options) {
 			if($value !== null) {
 				$options['query'] = $value;
@@ -240,7 +316,8 @@ class LaravelElasticsearchQueryBuilder {
 	public function orWhereMatch($column, $value = null, $options = []) {
 		$column = $this->prepended_path ? $this->prepended_path . '.' . $column : $column;
 		$column_bak = $column;
-		[$column, $property]= $this->getMappingProperty($column);
+		$result = $this->getMappingProperty($column);
+		$column = $result[0];
 		if( ! is_string($value) && ! is_integer($value) && ! is_null($value) && ! is_bool($value) && ! is_array($value)) {
 			throw new \Exception('String, Integer, Boolean, Array or NULL type value expected.');
 		}
@@ -258,7 +335,7 @@ class LaravelElasticsearchQueryBuilder {
 
 	/**
 	 * @param $column
-	 * @param $closure
+	 * @param callable|null $closure
 	 * @param bool $or
 	 * @param bool $boost
 	 * @return LaravelElasticsearchQueryBuilder
@@ -310,6 +387,12 @@ class LaravelElasticsearchQueryBuilder {
 		return $this->whereHas($column, $closure, true, $boost);
 	}
 
+	/**
+	 * @param $column
+	 * @param LaravelElasticsearchQueryBuilder $builder
+	 * @param $path
+	 * @return array|bool
+	 */
 	public function createNestedQuery($column, $builder, $path) {
 		if(strtolower($column) == $column) {
 			return false;
@@ -350,7 +433,6 @@ class LaravelElasticsearchQueryBuilder {
 			return $this;
 		}
 		$this->where($column, $operator, $value, true, $boost);
-		//$this->query['bool']['minimum_should_match'] = 1;
 		return $this;
 	}
 
@@ -369,7 +451,8 @@ class LaravelElasticsearchQueryBuilder {
 			if(snake_case(end($tokens)) == end($tokens)) {
 				throw new \Exception("Invalid relationship");
 			}
-			[$column, $property] = $this->getMappingProperty($relation, true);
+			$result = $this->getMappingProperty($relation, true);
+			$column = $result[0];
 			$this->with[] = $column;
 		}
 		return $this;
@@ -386,7 +469,8 @@ class LaravelElasticsearchQueryBuilder {
 			if(snake_case(end($tokens)) == end($tokens)) {
 				throw new \Exception("Invalid relationship");
 			}
-			[$column, $property] = $this->getMappingProperty($relation, true);
+			$result = $this->getMappingProperty($relation, true);
+			$column = $result[0];
 			$this->with_out[] = $column;
 		}
 		return $this;
@@ -447,7 +531,8 @@ class LaravelElasticsearchQueryBuilder {
 			// $values should not be empty.
 			return $this->where('id', -9999);
 		}
-		[$column, $property]= $this->getMappingProperty($column);
+		$result = $this->getMappingProperty($column);
+		$column = $result[0];
 		if($or) {
 			$this->query['bool']['should'][] = ['terms' => [$column => $values]];
 		} else {
@@ -469,7 +554,8 @@ class LaravelElasticsearchQueryBuilder {
 			// $values should not be empty.
 			return $this->where('id', -9999);
 		}
-		[$column, $property]= $this->getMappingProperty($column);
+		$result = $this->getMappingProperty($column);
+		$column = $result[0];
 		if($or) {
 			$this->where($column, '!=', $values, true);
 		} else {
@@ -529,7 +615,7 @@ class LaravelElasticsearchQueryBuilder {
 		if(is_null($from) && is_null($to)) {
 			throw new \Exception('Either from or to is required.');
 		}
-		$this->orWhere(function($q) use($column, $from, $to) {
+		$this->orWhere(function(LaravelElasticsearchQueryBuilder $q) use($column, $from, $to) {
 			if( ! is_null($from)) {
 				$q->where($column, '>=', $from);
 			}
@@ -558,14 +644,12 @@ class LaravelElasticsearchQueryBuilder {
 			$this->query['terms']['order'] = [$column => $order];
 			return $this;
 		}
-//		if( ! isset($this->model->mappingProperties) || ! in_array(snake_case($column), array_keys($this->model->mappingProperties))) {
-//			throw new \Exception("Invalid elasticsearch field '$column'.");
-//		}
+		$result = $this->getMappingProperty($column);
+		$column = $result[0];
 		if($script) {
 			$this->order['_script'] = ['type' => 'number', 'script' => $script, 'order' => $order];
 			return $this;
 		}
-//		['lang' => 'painless', 'source' => "if(doc['mode'] == 'lot') {return doc['starting'];} else {return doc['listing_price'];}"]
 		if(snake_case($column) != $column) {
 			$this->order[snake_case($column)] = [
 				'order' => $order,
@@ -726,7 +810,7 @@ class LaravelElasticsearchQueryBuilder {
 		$this->getMappingProperty($relation, true);
 		$custom_name = $custom_name ?? snake_case($relation);
 		$builder = new LaravelElasticsearchQueryBuilder($this->model);
-		$this->aggs[$relation] = [
+		$this->aggs[$custom_name] = [
 			'nested' => [
 				'path' => snake_case($relation)
 			],
@@ -743,7 +827,8 @@ class LaravelElasticsearchQueryBuilder {
 	 * Warning: the default size is 10. This number is determined by ES
 	 */
 	public function groupBy($column, $size = 10) {
-		[$column, $property]= $this->getMappingProperty($column);
+		$result = $this->getMappingProperty($column);
+		$column = $result[0];
 		$this->query['terms'] = [
 			'field' => $column
 		];
@@ -825,8 +910,8 @@ class LaravelElasticsearchQueryBuilder {
 			throw new \Exception('Model is missing.');
 		}
 		$params = [
-			'index' => $this->model->getIndexName(),
-			'type'  => $this->model->getIndexName(),
+			'index' => $this->index_name,
+			'type'  => $this->type_name,
 			'id'    => $key
 		];
 		$result = $this->es_client->delete($params);
@@ -850,6 +935,10 @@ class LaravelElasticsearchQueryBuilder {
 		$this->model = $model;
 		$this->es_hosts = config('laravel-elasticsearch-query-builder.ES_HOSTS') ?? json_decode(env('ES_HOSTS', '["localhost:9200"]'), true);
 		$this->es_client = $this->createClient();
+		$this->index_name = method_exists($model, 'getIndexName') ? $model->getIndexName() : 'index_name';
+		$this->type_name = method_exists($model, 'getTypeName') ? $model->getTypeName() :
+			(method_exists($model, 'getIndexName') ? $model->getIndexName() : 'type_name');
+		$this->validation = isset($model->mappingProperties) ? 'strict' : false;
 	}
 
 	/**
@@ -974,14 +1063,15 @@ class LaravelElasticsearchQueryBuilder {
 		if(is_null($value)) {
 			return true;
 		}
-		[$snake_case, $property]= $this->getMappingProperty($column);
+		$result = $this->getMappingProperty($column);
+		$property = $result[1];
 		$type = $property['type'];
 		if($type == 'string') {
 			return true;
 		} elseif($type == 'integer' && ! (ctype_digit($value) || is_int($value)) && ! is_array($value)) {
-			throw new \Exception("Integer value required for the column $column. Index name: {$this->model->getIndexName()}");
+			throw new \Exception("Integer value required for the column $column. Index name: {$this->index_name}");
 		} elseif($type == 'date' && ! strtotime($value) && ! is_array($value)) {
-			throw new \Exception("Date value required for the column $column. Index name: {$this->model->getIndexName()}");
+			throw new \Exception("Date value required for the column $column. Index name: {$this->index_name}");
 		}
 		return true;
 	}
@@ -1040,7 +1130,8 @@ class LaravelElasticsearchQueryBuilder {
 	 */
 	protected function invalidOperator($column, $operator) {
 		if(str_contains($column, '.')) {
-			[$name, $property]= $this->getMappingProperty($column);
+			$result = $this->getMappingProperty($column);
+			$property = $result[1];
 			$type = $property['type'];
 		} else {
 			$type = $this->model->mappingProperties[$column]['type'];
@@ -1056,8 +1147,8 @@ class LaravelElasticsearchQueryBuilder {
 	 */
 	private function constructParams() {
 		$params = [
-			'index' => $this->model->getIndexName(),
-			'type' => $this->model->getIndexName(),
+			'index' => $this->index_name,
+			'type' => $this->type_name,
 			'body' => [
 				'query' => $this->query,
 				'sort' => $this->order,

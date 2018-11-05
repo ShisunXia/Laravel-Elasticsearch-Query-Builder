@@ -90,6 +90,17 @@ The package only relies on the official [PHP Elasticsearch package(v6)](https://
     * getQuery
     * getBody
     * getAggs
+* Init & Config
+    * __construct
+    * setOptions
+    * getters
+      * getIndexName
+      * getTypeName
+      * getValidation
+    * setters
+      * setIndexName
+      * setTypeName
+      * setValidation
 
 ### Query Clauses
 
