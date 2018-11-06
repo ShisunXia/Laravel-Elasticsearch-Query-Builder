@@ -138,9 +138,6 @@ class LaravelElasticsearchQueryBuilder {
 			$value = $operator;
 			$operator = '=';
 		}
-		if( ! is_string($value) && ! is_integer($value) && ! is_null($value) && ! is_bool($value) && ! is_array($value)) {
-			throw new \Exception('String, Integer, Boolean, Array or NULL type value expected.');
-		}
 		if ($this->invalidOperator($column_bak, $operator)) {
 			list($value, $operator) = [$operator, '='];
 		}
@@ -286,9 +283,6 @@ class LaravelElasticsearchQueryBuilder {
 		$column_bak = $column;
 		$result = $this->getMappingProperty($column);
 		$column = $result[0];
-		if( ! is_string($value) && ! is_integer($value) && ! is_null($value) && ! is_bool($value) && ! is_array($value)) {
-			throw new \Exception('String, Integer, Boolean, Array or NULL type value expected.');
-		}
 		$this->validateValue($column_bak, $value);
 		if($options) {
 			if($value !== null) {
@@ -318,9 +312,6 @@ class LaravelElasticsearchQueryBuilder {
 		$column_bak = $column;
 		$result = $this->getMappingProperty($column);
 		$column = $result[0];
-		if( ! is_string($value) && ! is_integer($value) && ! is_null($value) && ! is_bool($value) && ! is_array($value)) {
-			throw new \Exception('String, Integer, Boolean, Array or NULL type value expected.');
-		}
 		$this->validateValue($column_bak, $value);
 		$match = [];
 		if($options) {
