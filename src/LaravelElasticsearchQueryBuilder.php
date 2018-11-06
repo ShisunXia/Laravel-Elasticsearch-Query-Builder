@@ -122,7 +122,7 @@ class LaravelElasticsearchQueryBuilder {
 	 * @throws \Exception
 	 */
 	public function where($column, $operator = null, $value = null, $or = false, $boost = false) {
-		if(is_callable($column)) {
+		if(is_callable($column) && ! is_string($column)) {
 			$builder = new LaravelElasticsearchQueryBuilder($this->model, $this->prepended_path);
 			$column($builder);
 			$query = $builder->getQuery();
@@ -332,7 +332,7 @@ class LaravelElasticsearchQueryBuilder {
 	 * @return LaravelElasticsearchQueryBuilder
 	 */
 	public function whereHas($column, $closure = null, $or = false, $boost = false) {
-		if(is_callable($column)) {
+		if(is_callable($column) && ! is_string($column)) {
 			$builder = new LaravelElasticsearchQueryBuilder($this->model, $this->prepended_path);
 			$column($builder);
 			$this->query['bool']['must'][] = $builder->getQuery();
@@ -415,7 +415,7 @@ class LaravelElasticsearchQueryBuilder {
 	 * @throws \Exception
 	 */
 	public function orWhere($column, $operator = null, $value = null, $boost = false) {
-		if(is_callable($column)) {
+		if(is_callable($column) && ! is_string($column)) {
 			$builder = new LaravelElasticsearchQueryBuilder($this->model, $this->prepended_path);
 			$column($builder);
 			$query = $builder->getQuery();
