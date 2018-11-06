@@ -693,7 +693,7 @@ class LaravelElasticsearchQueryBuilder {
 	 * @throws \Exception
 	 */
 	public function aggregate($name, $agg) {
-		$builder = new LaravelElasticsearchQueryBuilder($this->model);
+		$builder = new LaravelElasticsearchQueryBuilder($this->model, $this->prepended_path);
 		$agg($builder);
 		$aggregation = [];
 		$query = $builder->getQuery();
@@ -726,7 +726,7 @@ class LaravelElasticsearchQueryBuilder {
 	 * @throws \Exception
 	 */
 	public function aggregateAll($name, $agg) {
-		$builder = new LaravelElasticsearchQueryBuilder($this->model);
+		$builder = new LaravelElasticsearchQueryBuilder($this->model, $this->prepended_path);
 		$this->aggs['all_' . $name] = [
 			'global' => new \stdClass(),
 			'aggs' => $builder->aggregate($name, $agg)->getAggs()
@@ -742,8 +742,9 @@ class LaravelElasticsearchQueryBuilder {
 	 * @throws \Exception
 	 */
 	public function max($column, $agg_name = null) {
-		$this->getMappingProperty($column);
-		$this->aggs[$agg_name ?? 'max_' . $column] = ['max' => ['field' => $column]];
+		$prepended_column = $this->prepended_path ? ($this->prepended_path . '.' . $column) : $column;
+		list($prepended_column) = $this->getMappingProperty($prepended_column);
+		$this->aggs[$agg_name ?? 'max_' . $column] = ['max' => ['field' => $prepended_column]];
 		return $this;
 	}
 
@@ -754,15 +755,16 @@ class LaravelElasticsearchQueryBuilder {
 	 * @return $this
 	 */
 	public function sum($column, $agg_name = null, $missing_value = null) {
-		$this->getMappingProperty($column);
+		$prepended_column = $this->prepended_path ? ($this->prepended_path . '.' . $column) : $column;
+		list($prepended_column) = $this->getMappingProperty($prepended_column);
 		if($missing_value !== null) {
 			$this->aggs[$agg_name ?? 'sum_' . $column] = ['sum' => [
-				'field' => $column,
+				'field' => $prepended_column,
 				'missing' => $missing_value
 			]];
 		} else {
 			$this->aggs[$agg_name ?? 'sum_' . $column] = ['sum' => [
-				'field' => $column
+				'field' => $prepended_column
 			]];
 		}
 		return $this;
@@ -775,15 +777,16 @@ class LaravelElasticsearchQueryBuilder {
 	 * @return $this
 	 */
 	public function avg($column, $agg_name = null, $missing_value = null) {
-		$this->getMappingProperty($column);
+		$prepended_column = $this->prepended_path ? ($this->prepended_path . '.' . $column) : $column;
+		list($prepended_column) = $this->getMappingProperty($prepended_column);
 		if($missing_value !== null) {
 			$this->aggs[$agg_name ?? 'avg_' . $column] = ['avg' => [
-				'field' => $column,
+				'field' => $prepended_column,
 				'missing' => $missing_value
 			]];
 		} else {
 			$this->aggs[$agg_name ?? 'avg_' . $column] = ['avg' => [
-				'field' => $column
+				'field' => $prepended_column
 			]];
 		}
 		return $this;
@@ -796,8 +799,9 @@ class LaravelElasticsearchQueryBuilder {
 	 * @throws \Exception
 	 */
 	public function min($column, $agg_name = null) {
-		$this->getMappingProperty($column);
-		$this->aggs[$agg_name ?? 'min_' . $column] = ['min' => ['field' => $column]];
+		$prepended_column = $this->prepended_path ? ($this->prepended_path . '.' . $column) : $column;
+		list($prepended_column) = $this->getMappingProperty($prepended_column);
+		$this->aggs[$agg_name ?? 'min_' . $column] = ['min' => ['field' => $prepended_column]];
 		return $this;
 	}
 
@@ -811,7 +815,7 @@ class LaravelElasticsearchQueryBuilder {
 	public function aggregateOn($relation, $agg, $custom_name = null) {
 		$this->getMappingProperty($relation, true);
 		$custom_name = $custom_name ?? snake_case($relation);
-		$builder = new LaravelElasticsearchQueryBuilder($this->model);
+		$builder = new LaravelElasticsearchQueryBuilder($this->model, $relation);
 		$this->aggs[$custom_name] = [
 			'nested' => [
 				'path' => snake_case($relation)
@@ -829,7 +833,8 @@ class LaravelElasticsearchQueryBuilder {
 	 * Warning: the default size is 10. This number is determined by ES
 	 */
 	public function groupBy($column, $size = 10) {
-		$result = $this->getMappingProperty($column);
+		$prepended_column = $this->prepended_path ? ($this->prepended_path . '.' . $column) : $column;
+		$result = $this->getMappingProperty($prepended_column);
 		$column = $result[0];
 		$this->query['terms'] = [
 			'field' => $column
