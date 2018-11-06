@@ -664,7 +664,7 @@ class LaravelElasticsearchQueryBuilder {
 		if($is_relation) {
 			$this->order[snake_case($column) . $sub_field] = [
 				'order' => $order,
-				'nested_path'  => array_slice(explode('.', $name), 0, count(explode('.', $name)))
+				'nested_path'  => implode('.', array_slice(explode('.', $name), 0, count(explode('.', $name))))
 			];
 		} else {
 			$this->order[snake_case($column) . $sub_field] = ['order' => $order];
