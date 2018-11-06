@@ -645,18 +645,29 @@ class LaravelElasticsearchQueryBuilder {
 			return $this;
 		}
 		$result = $this->getMappingProperty($column);
-		$column = $result[0];
+		$property = $result[1];
+		$name = $result[0];
+		$is_relation = $name == $column ? false : true;
+		$sub_field = '';
+		if(($property['type'] == 'text' || (isset($property['index']) && $property['index'] == true)) && isset($property['fields'])) {
+			foreach ($property['fields'] as $field => $value) {
+				if($value['type'] == 'keyword') {
+					$sub_field = '.' . $field;
+					break;
+				}
+			}
+		}
 		if($script) {
 			$this->order['_script'] = ['type' => 'number', 'script' => $script, 'order' => $order];
 			return $this;
 		}
-		if(snake_case($column) != $column) {
-			$this->order[snake_case($column)] = [
+		if($is_relation) {
+			$this->order[snake_case($column) . $sub_field] = [
 				'order' => $order,
-				'nested_path'  => snake_case(explode('.', $column)[0])
+				'nested_path'  => array_slice(explode('.', $name), 0, count(explode('.', $name)))
 			];
 		} else {
-			$this->order[snake_case($column)] = ['order' => $order];
+			$this->order[snake_case($column) . $sub_field] = ['order' => $order];
 		}
 		return $this;
 	}
