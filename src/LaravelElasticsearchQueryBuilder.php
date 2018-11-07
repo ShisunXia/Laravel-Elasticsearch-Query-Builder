@@ -863,7 +863,7 @@ class LaravelElasticsearchQueryBuilder {
 			}
 			return $this->raw_results['aggregations'][$key];
 		}
-		return $this->raw_results['aggregations'];
+		return $this->raw_results['aggregations'] ?? [];
 	}
 
 	/**
