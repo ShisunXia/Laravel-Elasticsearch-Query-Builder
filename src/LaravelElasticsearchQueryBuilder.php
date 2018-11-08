@@ -734,8 +734,8 @@ class LaravelElasticsearchQueryBuilder {
 	public function scroll($scroll_alive = '5m', $scroll_size = 500) {
 		$this->scroll_alive = $scroll_alive;
 		$this->scroll_size = $scroll_size;
-		$results = [];
 		$scroll_id = $this->get()->rawResults()['_scroll_id'];
+		$results = $this->get()->toArray();
 		while(true) {
 			$response = $this->es_client->scroll([
 					'scroll_id' => $scroll_id,
