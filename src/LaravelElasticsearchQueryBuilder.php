@@ -38,6 +38,23 @@ class LaravelElasticsearchQueryBuilder {
 	private $type_name = 'type_name';
 	private $validation = 'strict';
 	private $mapping_properties = false;
+	private $key_name = 'id';
+
+	/**
+	 * @return string
+	 */
+	public function getKeyName(): string
+	{
+		return $this->key_name;
+	}
+
+	/**
+	 * @param string $key_name
+	 */
+	public function setKeyName(string $key_name)
+	{
+		$this->key_name = $key_name;
+	}
 
 	/**
 	 * @return bool|mixed
@@ -114,7 +131,7 @@ class LaravelElasticsearchQueryBuilder {
 	 * @return $this
 	 */
 	public function setOptions($options) {
-		$settable_options = ['index_name', 'type_name', 'validation'];
+		$settable_options = ['index_name', 'type_name', 'validation', 'key_name'];
 		foreach ($settable_options as $settable_option) {
 			if(isset($options[$settable_option])) {
 				if($settable_option == 'validation' && in_array($options[$settable_option], [false, 'strict', 'column-existence-only'])) {
@@ -693,6 +710,10 @@ class LaravelElasticsearchQueryBuilder {
 		return $this;
 	}
 
+	/**
+	 * @param $min_score
+	 * @return $this
+	 */
 	public function minScore($min_score) {
 		$this->min_score = $min_score;
 		return $this;
@@ -708,6 +729,10 @@ class LaravelElasticsearchQueryBuilder {
 		return $this;
 	}
 
+	/**
+	 * @param bool $return_eloquent
+	 * @return null
+	 */
 	public function first($return_eloquent = false) {
 		if( ! $return_eloquent) {
 			return $this->limit(1)->get()->toArray()[0] ?? null;
@@ -934,7 +959,7 @@ class LaravelElasticsearchQueryBuilder {
 	 * @return null|Eloquent
 	 */
 	public function find($key) {
-		return $this->where($this->model->getKeyName(), $key)->first(true);
+		return $this->where($this->key_name, $key)->first(true);
 	}
 
 	/**
@@ -977,6 +1002,7 @@ class LaravelElasticsearchQueryBuilder {
 		$this->type_name = method_exists($model, 'getTypeName') ? $model->getTypeName() :
 			(method_exists($model, 'getIndexName') ? $model->getIndexName() : 'type_name');
 		$this->validation = isset($model->mappingProperties) ? 'strict' : false;
+		$this->key_name = method_exists($model, 'getKeyName') ? $model->getKeyName() : 'id';
 	}
 
 	/**
@@ -1037,6 +1063,7 @@ class LaravelElasticsearchQueryBuilder {
 		$paginate['totalpages'] = 0;
 		$paginate['prev'] = false;
 		$paginate['next'] = false;
+		$paginate['per_page'] = $this->records_per_page;
 
 		if((int)$this->raw_results['hits']['total'] === 0) {
 			return $paginate;
