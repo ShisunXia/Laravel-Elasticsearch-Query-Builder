@@ -33,6 +33,8 @@ class LaravelElasticsearchQueryBuilder {
 	private $query;
 	private $body;
 	private $min_score;
+	private $scroll_alive = false;
+	private $scroll_size = false;
 	// Options
 	private $index_name = 'index_name';
 	private $type_name = 'type_name';
@@ -729,6 +731,29 @@ class LaravelElasticsearchQueryBuilder {
 		return $this;
 	}
 
+	public function scroll($scroll_alive = '5m', $scroll_size = 500) {
+		$this->scroll_alive = $scroll_alive;
+		$this->scroll_size = $scroll_size;
+		$results = [];
+		$scroll_id = $this->get()->rawResults()['_scroll_id'];
+		while(true) {
+			$response = $this->es_client->scroll([
+					'scroll_id' => $scroll_id,
+					'scroll' => $scroll_alive
+				]
+			);
+			if (count($response['hits']['hits']) > 0) {
+				array_map(function ($value) use (&$results) {
+					$results[] = $value['_source'];
+				}, $response['hits']['hits']);
+				$scroll_id = $response['_scroll_id'];
+			} else {
+				break;
+			}
+		}
+		return $results;
+	}
+
 	/**
 	 * @param bool $return_eloquent
 	 * @return null
@@ -1240,6 +1265,11 @@ class LaravelElasticsearchQueryBuilder {
 			$params['_source_include'] = $this->with;
 		} elseif($this->with_out) {
 			$params['_source_exclude'] = $this->with_out;
+		}
+		if($this->scroll_size && $this->scroll_alive) {
+			$params['search_type'] = 'scan';
+			$params['size'] = $this->scroll_size;
+			$params['scroll'] = $this->scroll_alive;
 		}
 		if(empty($this->query)) {
 			if($this->aggs) {
