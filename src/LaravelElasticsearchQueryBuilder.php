@@ -37,6 +37,23 @@ class LaravelElasticsearchQueryBuilder {
 	private $index_name = 'index_name';
 	private $type_name = 'type_name';
 	private $validation = 'strict';
+	private $mapping_properties = false;
+
+	/**
+	 * @return bool|mixed
+	 */
+	public function getMappingProperties()
+	{
+		return $this->mapping_properties;
+	}
+
+	/**
+	 * @param bool|mixed $mapping_properties
+	 */
+	public function setMappingProperties($mapping_properties)
+	{
+		$this->mapping_properties = $mapping_properties;
+	}
 
 	/**
 	 * @return mixed
@@ -339,7 +356,7 @@ class LaravelElasticsearchQueryBuilder {
 			return $this;
 		}
 		$column_bak = $column;
-		//$this->getMappingProperty($column, true);
+		$this->getMappingProperty($column, true);
 		$builder = $this->nested_queries[$column_bak] ?? new LaravelElasticsearchQueryBuilder($this->model, $column_bak);
 		$closure($builder);
 		$nested_query = $this->createNestedQuery($column_bak, $builder, '');
@@ -348,6 +365,11 @@ class LaravelElasticsearchQueryBuilder {
 		return $this;
 	}
 
+	/**
+	 * @param $column
+	 * @param bool $or
+	 * @return $this
+	 */
 	public function whereHasNull($column, $or = false) {
 		$this->query['bool'][$or ? 'should' : 'filter'][] = [
 			'bool' => [
@@ -366,6 +388,14 @@ class LaravelElasticsearchQueryBuilder {
 			]
 		];
 		return $this;
+	}
+
+	/**
+	 * @param $column
+	 * @return LaravelElasticsearchQueryBuilder
+	 */
+	public function orWhereHasNull($column) {
+		return $this->whereHasNull($column, true);
 	}
 
 	/**
@@ -927,10 +957,10 @@ class LaravelElasticsearchQueryBuilder {
 
 	/**
 	 * LaravelElasticsearchQueryBuilder constructor.
-	 * @param Eloquent $model
+	 * @param Eloquent|null $model
 	 * @param bool $prepended_path
 	 */
-	public function __construct(Eloquent $model, $prepended_path = false) {
+	public function __construct($model = null, $prepended_path = false) {
 		$this->query = ['bool' => [
 			'must'      => [],
 			'filter'    => [
@@ -942,6 +972,7 @@ class LaravelElasticsearchQueryBuilder {
 		$this->model = $model;
 		$this->es_hosts = config('laravel-elasticsearch-query-builder.ES_HOSTS') ?? json_decode(env('ES_HOSTS', '["localhost:9200"]'), true);
 		$this->es_client = $this->createClient();
+		$this->mapping_properties = $this->model->mappingProperties ?? false;
 		$this->index_name = method_exists($model, 'getIndexName') ? $model->getIndexName() : 'index_name';
 		$this->type_name = method_exists($model, 'getTypeName') ? $model->getTypeName() :
 			(method_exists($model, 'getIndexName') ? $model->getIndexName() : 'type_name');
@@ -1070,6 +1101,9 @@ class LaravelElasticsearchQueryBuilder {
 		if(is_null($value)) {
 			return true;
 		}
+		if($this->validation != 'strict') {
+			return true;
+		}
 		$result = $this->getMappingProperty($column);
 		$property = $result[1];
 		$type = $property['type'];
@@ -1092,7 +1126,16 @@ class LaravelElasticsearchQueryBuilder {
 	private function getMappingProperty($column, $is_relation = false) {
 		$columns = explode('.', $column);
 		$snake_case = [];
-		$mapping_properties = $this->model->mappingProperties;
+		if($this->mapping_properties === false) {
+			foreach ($columns as $index => $column) {
+				$snake_case[] = snake_case($column);
+				if(snake_case($column) == $column || ($is_relation && $index == count($columns) - 1)) {
+					return array(implode('.', $snake_case), []);
+				}
+			}
+			throw new \Exception("Invalid elasticsearch field '$column'");
+		}
+		$mapping_properties = $this->mapping_properties;
 		if( ! $mapping_properties) {
 			throw new \Exception("Mapping properties not accessible.");
 		}
@@ -1136,12 +1179,15 @@ class LaravelElasticsearchQueryBuilder {
 	 * @throws \Exception
 	 */
 	protected function invalidOperator($column, $operator) {
+		if($this->validation != 'strict') {
+			return false;
+		}
 		if(str_contains($column, '.')) {
 			$result = $this->getMappingProperty($column);
 			$property = $result[1];
 			$type = $property['type'];
 		} else {
-			$type = $this->model->mappingProperties[$column]['type'];
+			$type = $this->mapping_properties[$column]['type'];
 		}
 		if($type == 'string' && in_array($operator, ['<', '<=', '>', '>='])) {
 			throw new \Exception('Invalid range operator for string type field');
