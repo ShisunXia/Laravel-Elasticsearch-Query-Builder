@@ -1267,7 +1267,6 @@ class LaravelElasticsearchQueryBuilder {
 			$params['_source_exclude'] = $this->with_out;
 		}
 		if($this->scroll_size && $this->scroll_alive) {
-			$params['search_type'] = 'scan';
 			$params['size'] = $this->scroll_size;
 			$params['scroll'] = $this->scroll_alive;
 		}
