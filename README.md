@@ -165,6 +165,7 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
     * [withOut](#without)
 * [Execute Query](#execute-query)
     * [get](#get)
+    * [scroll](#scroll)
     * [count](#count)
     * [first](#first)
     * [find](#find)
@@ -287,17 +288,17 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
    |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
    | column   | Y        | ``string``              |           |                                                       |
    | value    |          | ``mixed``               | ``null``  |                                                       |
-   | boost    |          | ``array``               | []        | ``match``query options. Check elasticsearch Docs for references |
+   | options  |          | ``array``               | []        | ``match``query options. Check elasticsearch Docs for references |
 * Output
    
    ``self``
 
 * Examples
-   1. without option
+   1. without ``options``
       ```php
       User::es()->whereMatch('email', 'shisun@')->first()
       ```
-   2. ``column`` can be a function
+   2. with ``options``
       ```php
       User::es()->whereMatch('email', 'shisun@', [
              'query' => 'this will be overrided by $value',
@@ -305,6 +306,33 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
              'zero_terms_query' => 'all'
            ])->first()
       ```
+      
+#### orWhereMatch
+* Parameters
+
+   | Name     | Required | Type                    | Default   | Description                                           |
+   |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
+   | column   | Y        | ``string``              |           |                                                       |
+   | value    |          | ``mixed``               | ``null``  |                                                       |
+   | options  |          | ``array``               | []        | ``match``query options. Check elasticsearch Docs for references |
+* Output
+   
+   ``self``
+
+* Examples
+   1. without ``options``
+      ```php
+      User::es()->orWhereMatch('email', 'shisun@')->first()
+      ```
+   2. with ``options``
+      ```php
+      User::es()->orWhereMatch('email', 'shisun@', [
+             'query' => 'this will be overrided by $value',
+             'operator' => 'and',
+             'zero_terms_query' => 'all'
+           ])->first()
+      ```
+      
 #### whereHas
 * Parameters
 
@@ -897,6 +925,23 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
       
 ### Execute Query
 #### get
+#### scroll
+* Parameters
+
+   | Name     | Required | Type                    | Default   | Description                                           |
+   |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
+   |scroll_alive|          | ``string``             |``5m``    | This specifies the life span of the scroll session.   |
+   |scroll_size|          | ``integer``             |``500``   | This specifies the number of records retrieved from Elasticsearch per batch.|
+   
+* Output
+   
+   ``array``
+
+* Examples
+   1. basic example
+      ```php
+      User::es()->scroll()
+      ```
 #### count
 * Output
    
