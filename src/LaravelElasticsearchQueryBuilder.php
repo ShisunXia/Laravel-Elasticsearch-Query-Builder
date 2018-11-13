@@ -202,22 +202,14 @@ class LaravelElasticsearchQueryBuilder {
 				break;
 			case '!=':
 				if($or) {
-					$builder = new LaravelElasticsearchQueryBuilder($this->model);
-					$builder->where($column, '!=', $value);
-					if(isset($this->query['bool']['should']['bool']) && $value !== null) {
-						$this->query['bool']['should']['bool']['must_not'][] = [(is_array($value) ? 'terms' : 'term') => [$column => $value]];
-					} else if(isset($this->query['bool']['should']) && $value === null) {
-						$this->query['bool']['should'][] = ['exists' => ['field' => $column]];
+					if($value === null) {
+						$this->query['bool']['should'][] = ['exists' => [
+							'field' => $column
+						]];
 					} else {
-						if($value === null) {
-							$this->query['bool']['should'][] = ['exists' => [
-								'field' => $column
-							]];
-						} else {
-							$this->query['bool']['should']['bool'] = ['must_not' => [
-								[(is_array($value) ? 'terms' : 'term') => [$column => $value]]
-							]];
-						}
+						$this->query['bool']['should'][] = ['bool' => ['must_not' => [
+							[(is_array($value) ? 'terms' : 'term') => [$column => $value]]
+						]]];
 					}
 				} else {
 					if($value === null) {
