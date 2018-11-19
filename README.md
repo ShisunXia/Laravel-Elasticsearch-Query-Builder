@@ -73,12 +73,12 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
                 ],
                 'multi_fields_example' => [
                     'type' => 'text',
-                        'fields' => [
-                            'raw' => [
-                                'type' => 'keyword'
-                            ]
+                    'fields' => [
+                        'raw' => [
+                            'type' => 'keyword'
                         ]
-                    ],
+                    ]
+                ],
                 'created_at' => [
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss',
@@ -989,6 +989,7 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
       User::es()->find(5)
       ```
 #### delete
+* Delete a record from elasticsearch. Returns false if the record does not exist.
 * Parameters
 
    | Name     | Required | Type                    | Default   | Description                                           |
