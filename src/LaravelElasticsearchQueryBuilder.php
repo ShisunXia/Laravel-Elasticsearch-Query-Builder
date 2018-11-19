@@ -981,7 +981,7 @@ class LaravelElasticsearchQueryBuilder {
 
 	/**
 	 * @param $key
-	 * @return mixed
+	 * @return boolean
 	 * @throws \Exception
 	 */
 	public function delete($key) {
@@ -999,7 +999,7 @@ class LaravelElasticsearchQueryBuilder {
 			return false;
 		}
 
-		return $result['found'];
+		return true;
 	}
 
 	/**
