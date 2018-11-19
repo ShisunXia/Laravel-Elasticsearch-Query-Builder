@@ -993,7 +993,12 @@ class LaravelElasticsearchQueryBuilder {
 			'type'  => $this->type_name,
 			'id'    => $key
 		];
-		$result = $this->es_client->delete($params);
+		try {
+			$result = $this->es_client->delete($params);
+		} catch(\Elasticsearch\Common\Exceptions\Missing404Exception $e) {
+			return false;
+		}
+
 		return $result['found'];
 	}
 
