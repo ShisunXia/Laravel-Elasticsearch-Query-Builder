@@ -234,7 +234,7 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
    | Name     | Required | Type                    | Default   | Description                                           |
    |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
    | column   | Y        | ``callable``,``string`` |           |                                                       |
-   | operator |          | ``string``              | ``null``  | ``=``,``>``,``<``,``<=``,``>=``,``like``,``!=``,``*`` |
+   | operator |          | ``string``              | ``null``  | ``=``,``>``,``<``,``<=``,``>=``,``!=``,``*`` |
    | value    |          | ``mixed``               | ``null``  |                                                       |
    | or       |          | ``bool``                | ``false`` |                                                       |
    | boost    |          | ``bool``,``int``        | ``false`` | The weight of the column                              |
@@ -247,7 +247,12 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
       ```php
       User::es()->where('id', 1)->first()
       ```
-   2. ``column`` can be a function
+   2. ``*`` is the wildcard operator
+         ```php
+         // Find the user whose name starts with 'Leo'
+         User::es()->where('name', '*', 'Leo*')->first()
+         ```
+   3. ``column`` can be a function
       ```php
       User::es()->where(function($q) {
           $q->orWhere(...)->orWhere(...);
