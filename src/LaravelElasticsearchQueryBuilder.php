@@ -378,35 +378,51 @@ class LaravelElasticsearchQueryBuilder {
 
 	/**
 	 * @param $column
+	 * @param null $closure
 	 * @param bool $or
 	 * @return $this
 	 */
-	public function whereHasNull($column, $or = false) {
-		$this->query['bool'][$or ? 'should' : 'filter'][] = [
-			'bool' => [
-				'must_not' => [
-					[
-						'nested' => [
-							'path' => strtolower($column),
-							'query' => [
-								'exists' => [
-									'field' => strtolower($column)
+	public function whereHasNull($column, $closure = null, $or = false) {
+		if($closure === null) {
+			$this->query['bool'][$or ? 'should' : 'filter'][] = [
+				'bool' => [
+					'must_not' => [
+						[
+							'nested' => [
+								'path' => strtolower($column),
+								'query' => [
+									'exists' => [
+										'field' => strtolower($column)
+									]
 								]
 							]
 						]
 					]
 				]
-			]
-		];
+			];
+		} else {
+			$column_bak = $column;
+			$this->getMappingProperty($column, true);
+			$builder = $this->nested_queries[$column_bak] ?? new LaravelElasticsearchQueryBuilder($this->model, $column_bak);
+			$closure($builder);
+			$nested_query = $this->createNestedQuery($column_bak, $builder, '');
+			$this->query['bool'][$or ? 'should' : 'filter'][] = [
+				'bool' => [
+					'must_not' => $nested_query
+				]
+			];
+		}
+
 		return $this;
 	}
 
 	/**
 	 * @param $column
+	 * @param null $closure
 	 * @return LaravelElasticsearchQueryBuilder
 	 */
-	public function orWhereHasNull($column) {
-		return $this->whereHasNull($column, true);
+	public function orWhereHasNull($column, $closure = null) {
+		return $this->whereHasNull($column, $closure, $or = true);
 	}
 
 	/**

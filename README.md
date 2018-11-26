@@ -404,7 +404,8 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
 
    | Name     | Required | Type                    | Default   | Description                                           |
    |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
-   | relation | Y        | ``string``, ``callable``|           | Must be capitalized                                   |
+   | relation | Y        | ``string``              |           | Must be capitalized                                   |
+   | closure  |          | ``null``, ``callable``  |``null``   |                                                       |
 
 * Output
    
@@ -416,12 +417,20 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
       // find all users with no someRelation
       User::es()->whereHasNull('someRelations')->first();
       ```
+   2. with sub query
+      ```php
+      // find all users with no someRelation with id = 1
+      User::es()->whereHasNull('someRelations', function($q) {
+          $q->where('id', 1);
+      })->first();
+      ```
 #### orWhereHasNull
 * Parameters
 
    | Name     | Required | Type                    | Default   | Description                                           |
    |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
-   | relation | Y        | ``string``, ``callable``|           | Must be capitalized                                   |
+   | relation | Y        | ``string``              |           | Must be capitalized                                   |
+   | closure  |          | ``null``, ``callable``  |``null``   |                                                       |
 
 * Output
    
