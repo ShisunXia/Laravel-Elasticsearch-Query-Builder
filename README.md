@@ -258,6 +258,47 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
           $q->orWhere(...)->orWhere(...);
       })->get()->toArray()
       ```
+#### whereNull
+* Parameters
+
+   | Name     | Required | Type                    | Default   | Description                                           |
+   |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
+   | column   | Y        | ``string``              |           | Column or relation                                    |
+* Output
+   
+   ``self``
+
+* Examples
+   1. Find all users with no name
+      ```php
+      User::es()->whereNull('name')->get()
+      ```
+   2. Find all users with no address
+         ```php
+         // Find the user whose name starts with 'Leo'
+         User::es()->whereNull('Addresses')->get()
+         ```
+
+#### whereNotNull
+* Parameters
+
+   | Name     | Required | Type                    | Default   | Description                                           |
+   |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
+   | column   | Y        | ``string``              |           | Column or relation                                    |
+* Output
+   
+   ``self``
+
+* Examples
+   1. Find all users with a name
+      ```php
+      User::es()->whereNotNull('name')->get()
+      ```
+   2. Find all users with at least one address
+         ```php
+         // Find the user whose name starts with 'Leo'
+         User::es()->whereNotNull('Addresses')->get()
+         ```
 
 #### orWhere
 

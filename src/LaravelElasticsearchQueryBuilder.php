@@ -180,7 +180,12 @@ class LaravelElasticsearchQueryBuilder {
 		$this->validateValue($column_bak, $value);
 		switch($operator) {
 			case '=':
-				$this->query['bool'][$or ? 'should' : 'filter'][] = $value !== null ? ['term' => [$column => $value]] : ['missing' => ['field' => $column]];
+				$this->query['bool'][$or ? 'should' : 'filter'][] = $value !== null ? ['term' => [$column => $value]] :
+					['bool' => ['must_not' => [
+						['exists' => [
+							'field' => $column
+						]]
+					]]];
 				break;
 			case '<':
 				$this->query['bool'][$or ? 'should' : 'filter'][] = ['range' => [$column => ['lt' => $value]]];
@@ -229,7 +234,11 @@ class LaravelElasticsearchQueryBuilder {
 	}
 
 	public function whereNull($column) {
+		return $this->where(snake_case($column), '=', null);
+	}
 
+	public function whereNotNull($column) {
+		return $this->where(snake_case($column), '!=', null);
 	}
 
 	/**
@@ -389,10 +398,10 @@ class LaravelElasticsearchQueryBuilder {
 					'must_not' => [
 						[
 							'nested' => [
-								'path' => strtolower($column),
+								'path' => snake_case($column),
 								'query' => [
 									'exists' => [
-										'field' => strtolower($column)
+										'field' => snake_case($column)
 									]
 								]
 							]
