@@ -748,7 +748,7 @@ class LaravelElasticsearchQueryBuilder {
 		return $this;
 	}
 
-	public function scroll($scroll_alive = '5m', $scroll_size = 500) {
+	public function scroll($scroll_alive = '5m', $scroll_size = 500, $json = false) {
 		$this->scroll_alive = $scroll_alive;
 		$this->scroll_size = $scroll_size;
 		$scroll_id = $this->get()->rawResults()['_scroll_id'];
@@ -760,9 +760,13 @@ class LaravelElasticsearchQueryBuilder {
 				]
 			);
 			if (count($response['hits']['hits']) > 0) {
-				array_map(function ($value) use (&$results) {
-					$results[] = $value['_source'];
-				}, $response['hits']['hits']);
+				if($json) {
+					$results[] = json_encode(array_column($response['hits']['hits'], '_source'));
+				} else {
+					array_map(function ($value) use (&$results) {
+						$results[] = $value['_source'];
+					}, $response['hits']['hits']);
+				}
 				$scroll_id = $response['_scroll_id'];
 			} else {
 				break;

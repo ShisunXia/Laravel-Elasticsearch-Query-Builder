@@ -987,7 +987,7 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
    |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
    |scroll_alive|          | ``string``             |``5m``    | This specifies the life span of the scroll session.   |
    |scroll_size|          | ``integer``             |``500``   | This specifies the number of records retrieved from Elasticsearch per batch.|
-   
+   |json      |          | ``boolean``             |``false``   | If encode the results from each batch in JSON format. Fetching data and put the data in PHP array can consume a lot of memory. This option can greatly reduce the memory usage.|
 * Output
    
    ``array``
