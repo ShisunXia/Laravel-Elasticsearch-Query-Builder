@@ -273,9 +273,8 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
       ```php
       User::es()->whereNull('name')->get()
       ```
-   2. Find all users with no address
+   2. Find all users who don't have address
          ```php
-         // Find the user whose name starts with 'Leo'
          User::es()->whereNull('Addresses')->get()
          ```
 
@@ -294,9 +293,8 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
       ```php
       User::es()->whereNotNull('name')->get()
       ```
-   2. Find all users with at least one address
+   2. Find all users who have at least one address
          ```php
-         // Find the user whose name starts with 'Leo'
          User::es()->whereNotNull('Addresses')->get()
          ```
 
