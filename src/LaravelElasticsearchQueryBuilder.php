@@ -853,23 +853,25 @@ class LaravelElasticsearchQueryBuilder {
 	}
 
 	/**
-	 * @param $column
+	 * @param null|string $column
 	 * @param null|string $agg_name
 	 * @param null|float|int $missing_value
 	 * @return $this
 	 */
-	public function sum($column, $agg_name = null, $missing_value = null) {
-		$prepended_column = $this->prepended_path ? ($this->prepended_path . '.' . $column) : $column;
-		list($prepended_column) = $this->getMappingProperty($prepended_column);
-		if($missing_value !== null) {
+	public function sum($column = '', $agg_name = null, $missing_value = null, $script = null) {
+		if($script) {
 			$this->aggs[$agg_name ?? 'sum_' . $column] = ['sum' => [
-				'field' => $prepended_column,
-				'missing' => $missing_value
+				'script' => $script
 			]];
-		} else {
-			$this->aggs[$agg_name ?? 'sum_' . $column] = ['sum' => [
-				'field' => $prepended_column
-			]];
+		}
+		if($column) {
+			$prepended_column = $this->prepended_path ? ($this->prepended_path . '.' . $column) : $column;
+			list($prepended_column) = $this->getMappingProperty($prepended_column);
+			$this->aggs[$agg_name ?? 'sum_' . $column]['sum']['field'] = $prepended_column;
+		}
+
+		if($missing_value) {
+			$this->aggs[$agg_name ?? 'sum_' . $column]['sum']['missing'] = $missing_value;
 		}
 		return $this;
 	}

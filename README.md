@@ -900,9 +900,10 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
 
    | Name     | Required | Type                    | Default   | Description                                           |
    |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
-   | column   | Y        | ``string``              |           |                                                       |
+   | column   |          | ``string``              | ``Empty`` |                                                       |
    |custom_name|         | ``string``              | ``null``  |                                                       |
    |missing_value|       | ``numeric``             | ``null``  | This value will be used to replace null values        |
+   |script    |          | ``array``               | ``null``  | Check official Doc as reference                       |
 * Output
    
    ``self``
