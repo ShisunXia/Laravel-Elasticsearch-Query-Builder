@@ -344,6 +344,35 @@ class LaravelElasticsearchQueryBuilder {
 	 * @return LaravelElasticsearchQueryBuilder
 	 * @throws \Exception
 	 */
+	public function whereDoesntMatch($column, $value = null, $options = []) {
+		$column = $this->prepended_path ? $this->prepended_path . '.' . $column : $column;
+		$column_bak = $column;
+		$result = $this->getMappingProperty($column);
+		$column = $result[0];
+		$this->validateValue($column_bak, $value);
+		if($options) {
+			if($value !== null) {
+				$options['query'] = $value;
+			} elseif( ! isset($options['query'])) {
+				throw new \Exception('Either $value or $options["query"] is required.');
+			}
+			$match = [
+				$column => $options
+			];
+		} else {
+			$match = [$column => $value];
+		}
+		$this->query['bool']['must_not'][] = ['match' => $match];
+		return $this;
+	}
+
+	/**
+	 * @param $column
+	 * @param null $value
+	 * @param $options
+	 * @return LaravelElasticsearchQueryBuilder
+	 * @throws \Exception
+	 */
 	public function orWhereMatch($column, $value = null, $options = []) {
 		$column = $this->prepended_path ? $this->prepended_path . '.' . $column : $column;
 		$column_bak = $column;

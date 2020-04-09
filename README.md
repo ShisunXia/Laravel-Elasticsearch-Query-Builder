@@ -134,6 +134,7 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
     * [where](#where)
     * [orWhere](#orwhere)
     * [whereMatch](#wherematch)
+    * [whereDoesntMatch](#wheredoesntmatch)
     * [orWhereMatch](#)
     * [whereHas](#wherehas)
     * [whereHasNull](#wherehasnull)
@@ -345,6 +346,32 @@ The package is developed and tested under Elasticsearch ``v6.*``. It should be a
    2. with ``options``
       ```php
       User::es()->whereMatch('email', 'shisun@', [
+             'query' => 'this will be overrided by $value',
+             'operator' => 'and',
+             'zero_terms_query' => 'all'
+           ])->first()
+      ```
+
+#### whereDoesntMatch
+* Parameters
+
+   | Name     | Required | Type                    | Default   | Description                                           |
+   |:--------:|:--------:|:-----------------------:|:---------:|:-----------------------------------------------------:|
+   | column   | Y        | ``string``              |           |                                                       |
+   | value    |          | ``mixed``               | ``null``  |                                                       |
+   | options  |          | ``array``               | []        | ``match``query options. Check elasticsearch Docs for references |
+* Output
+   
+   ``self``
+
+* Examples
+   1. without ``options``
+      ```php
+      User::es()->whereDoesntMatch('email', 'shisun@')->first()
+      ```
+   2. with ``options``
+      ```php
+      User::es()->whereDoesntMatch('email', 'shisun@', [
              'query' => 'this will be overrided by $value',
              'operator' => 'and',
              'zero_terms_query' => 'all'
