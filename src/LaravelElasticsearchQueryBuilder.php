@@ -522,6 +522,16 @@ class LaravelElasticsearchQueryBuilder {
 		return $this;
 	}
 
+	/**
+	 * @param Array $column
+	 * @return Array
+	 */
+	public function rawSearch($body) {
+		$params = $this->constructParams();
+		$params['body'] = $body;
+		return $this->es_client->search($params);
+	}
+
 	public function getQuery() {
 		return $this->array_remove_empty($this->query, 1);
 	}
@@ -834,12 +844,12 @@ class LaravelElasticsearchQueryBuilder {
 			$aggregation['terms'] = $query['terms'];
 			unset($query['terms']);
 		}
-		$aggregation['filter'] = $this->array_remove_empty($query);
+		$aggregation['filter'] = $this->array_remove_empty($query, true);
 		if(empty($aggregation['filter'])) {
 			unset($aggregation['filter']);
 		}
 		if( ! empty($builder->getAggs())) {
-			$aggregation['aggs'] = $this->array_remove_empty($builder->getAggs());
+			$aggregation['aggs'] = $this->array_remove_empty($builder->getAggs(), true);
 		}
 		if(isset($aggregation['terms']) && isset($aggregation['filter'])) {
 			throw new \Exception("Using 'where' and 'groupBy' at the same level is illegal. Please use nested aggregate instead.");
