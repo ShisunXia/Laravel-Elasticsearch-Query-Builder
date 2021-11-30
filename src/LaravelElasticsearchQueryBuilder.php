@@ -327,7 +327,13 @@ class LaravelElasticsearchQueryBuilder {
 		$column = $this->prepended_path ? $this->prepended_path . '.' . $column : $column;
 		$column_bak = $column;
 		$result = $this->getMappingProperty($column);
-		$column = $result[0];
+		
+		/**
+		 * prepend index name to column
+		 * $column = $result[0];
+		 */
+		$column = $this->getIndexName().'.'.$column;
+		
 		$this->validateValue($column_bak, $value);
 		if($options) {
 			if($value !== null) {
@@ -385,7 +391,13 @@ class LaravelElasticsearchQueryBuilder {
 		$column = $this->prepended_path ? $this->prepended_path . '.' . $column : $column;
 		$column_bak = $column;
 		$result = $this->getMappingProperty($column);
-		$column = $result[0];
+
+		/**
+		 * prepend index name to column
+		 * $column = $result[0];
+		 */
+		$column = $this->getIndexName().'.'.$result[0];
+
 		$this->validateValue($column_bak, $value);
 		$match = [];
 		if($options) {
