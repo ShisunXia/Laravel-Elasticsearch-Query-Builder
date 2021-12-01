@@ -1171,7 +1171,7 @@ class LaravelElasticsearchQueryBuilder {
 			return $items;
 		}
 		foreach($this->raw_results['hits']['hits'] as $index => $item) {
-			$result = $item['_source']['items'];
+			$result = $item['_source'][$this->index_name];
 			$result['_score'] = $item['_score'];
 			$items[] = $result;
 		}
