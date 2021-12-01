@@ -828,7 +828,10 @@ class LaravelElasticsearchQueryBuilder {
 	public function get() {
 		$this->query = $this->array_remove_empty($this->query, 1);
 		$params = $this->constructParams();
+		\Illuminate\Support\Facades\Log::info(__FILE__.'-'.__LINE__);
 		$this->raw_results = $this->es_client->search($params);
+		\Illuminate\Support\Facades\Log::info(json_encode($this->raw_results));
+
 		return $this;
 	}
 
@@ -1164,11 +1167,11 @@ class LaravelElasticsearchQueryBuilder {
 		if( ! is_array($this->raw_results)) {
 			return $items;
 		}
-		if((int)$this->raw_results['hits']['total'] === 0) {
+		if((int)$this->raw_results['hits']['total']['value'] === 0) {
 			return $items;
 		}
 		foreach($this->raw_results['hits']['hits'] as $index => $item) {
-			$result = $item['_source'];
+			$result = $item['_source']['items'];
 			$result['_score'] = $item['_score'];
 			$items[] = $result;
 		}
@@ -1216,16 +1219,16 @@ class LaravelElasticsearchQueryBuilder {
 		$paginate['next'] = false;
 		$paginate['per_page'] = $this->records_per_page;
 
-		if((int)$this->raw_results['hits']['total'] === 0) {
+		if((int)$this->raw_results['hits']['total']['value'] === 0) {
 			return $paginate;
 		}
 
-		$rows = $this->raw_results['hits']['total'];
+		$rows = $this->raw_results['hits']['total']['value'];
 		/**
 		 * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html
 		 * $page = ceil($this->raw_results['hits']['total'] / $this->records_per_page);
 		 */
-		$pages = ceil($this->raw_results['hits']['total']['value'] / $this->records_per_page);
+		$pages = ceil($rows / $this->records_per_page);
 		$page = ($this->page < 1) ? 1: (($this->page > $pages) ? $pages : $this->page);
 		$half = floor($paginatelimit / 2);
 
