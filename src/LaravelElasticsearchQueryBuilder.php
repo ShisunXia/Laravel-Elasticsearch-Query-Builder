@@ -426,7 +426,7 @@ class LaravelElasticsearchQueryBuilder {
 		}
 		$column_bak = $column;
 		$this->getMappingProperty($column, true);
-		$builder = $this->nested_queries[$column_bak] ?? new LaravelElasticsearchQueryBuilder($this->model, $column_bak);
+		$builder = $this->nested_queries[$column_bak] ?? new LaravelElasticsearchQueryBuilder($this->model, snake_case($column_bak));
 		$closure($builder);
 		$nested_query = $this->createNestedQuery($column_bak, $builder, '');
 		$this->query['bool'][$or ? 'should' : 'filter'][] =
@@ -467,7 +467,7 @@ class LaravelElasticsearchQueryBuilder {
 		} else {
 			$column_bak = $column;
 			$this->getMappingProperty($column, true);
-			$builder = $this->nested_queries[$column_bak] ?? new LaravelElasticsearchQueryBuilder($this->model, $column_bak);
+			$builder = $this->nested_queries[$column_bak] ?? new LaravelElasticsearchQueryBuilder($this->model, snake_case($column_bak));
 			$closure($builder);
 			$nested_query = $this->createNestedQuery($column_bak, $builder, '');
 			$this->query['bool'][$or ? 'should' : 'filter'][] = [
